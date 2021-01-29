@@ -1,7 +1,6 @@
 package com.example.democmdln;
 
 import com.example.democmdln.service.ExportService;
-import com.example.democmdln.service.HelloMessageService;
 import com.example.democmdln.service.ImportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
@@ -15,9 +14,6 @@ import static java.lang.System.exit;
 
 @SpringBootApplication
 public class DemocmdlnApplication implements CommandLineRunner {
-
-	@Autowired
-	private HelloMessageService helloService;
 
 	@Autowired
 	private ImportService importService;
@@ -39,9 +35,9 @@ public class DemocmdlnApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		if (args.length > 0) {
-			System.out.println(helloService.getMessage(args[0].toString()));
+			//with args
 		}else{
-			System.out.println(helloService.getMessage());
+			//no args
 		}
 
 		runDateTime = LocalDateTime.now();

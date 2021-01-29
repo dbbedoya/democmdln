@@ -5,6 +5,7 @@ This project was created for the purpose of meeting the requirements for WCF-Mar
 - Created on a MAC with IntelliJ Community, Java 8, SpringBoot, and PostgreSQL
 - Implements Command Line and JDBC
 - See application.properties for more information.
+- Program is writing to console for debugging
 
 
 I am running a postgreSQL server on my localhost.  I created a database mydb.
