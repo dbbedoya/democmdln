@@ -13,6 +13,7 @@ User danielb was created as a superuser.
 
 The PostgreSQL table used to store and summarize the data.
 
+```
 create table balances
 (
 	balances_id serial,
@@ -30,5 +31,5 @@ create table balances
 
 create index createfileidx on balances 
 (createtime, filename);
-
+```
 
