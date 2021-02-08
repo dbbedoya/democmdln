@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -29,6 +28,11 @@ public class ExportService {
     private String datasourcePassword;
 
     private static final String HEADER = "STATE,MIN_BALANCE,MAX_BALANCE,MEAN_BALANCE,TOTAL_BALANCE";
+    private static final String STATE = "STATE";
+    private static final String MIN_BALANCE = "MIN_BALANCE";
+    private static final String MAX_BALANCE = "MAX_BALANCE";
+    private static final String MEAN_BALANCE = "MEAN_BALANCE";
+    private static final String TOTAL_BALANCE = "TOTAL_BALANCE";
 
     private static final String SQL_SELECT = "select b.state, min(b.balance) min_balance, max(b.balance) max_balance, avg(b.balance) mean_balance, sum(b.balance) total_balance \n" +
                                                 "from balances b \n" +
@@ -60,21 +64,24 @@ public class ExportService {
             pstmt = conn.prepareStatement(SQL_SELECT);
             pstmt.setTimestamp(1, Timestamp.valueOf(runDateTime));
             pstmt.setString(2, inputfile);
+
+            System.out.printf("SQL_SELECT: %s \nParameter createtime: %s \nParameter filename: %s \n", SQL_SELECT, runDateTime.toString(), inputfile);
+
             ResultSet resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {
                 iCnt = iCnt + 1;
 
-                line = resultSet.getString("STATE") + "," +
-                        resultSet.getBigDecimal("MIN_BALANCE") + "," +
-                        resultSet.getBigDecimal("MAX_BALANCE") + "," +
-                        resultSet.getBigDecimal("MEAN_BALANCE") .setScale(2, RoundingMode.HALF_UP)+ "," +
-                        resultSet.getBigDecimal("TOTAL_BALANCE");
+                line = resultSet.getString(STATE) + "," +
+                        resultSet.getBigDecimal(MIN_BALANCE) + "," +
+                        resultSet.getBigDecimal(MAX_BALANCE) + "," +
+                        resultSet.getBigDecimal(MEAN_BALANCE) .setScale(2, RoundingMode.HALF_UP)+ "," +
+                        resultSet.getBigDecimal(TOTAL_BALANCE);
 
                 fileWriter.write(line + "\n");
                 fileWriter.flush();
 
-                System.out.println(line);
+                //System.out.println(line);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -83,14 +90,11 @@ public class ExportService {
         } finally {
             if (fileWriter != null) {  try {  fileWriter.close();  } catch (Exception e1) { }  }
             if (pstmt != null) {  try {  pstmt.close();  } catch (Exception e2) { }  }
-            if (conn != null) {  try {  conn.close();  } catch (Exception e2) { }  }
+            if (conn != null) {  try {  conn.close();  } catch (Exception e3) { }  }
         }
-
-
 
         return "Exported: " + iCnt;
     }
-
 
 
 }

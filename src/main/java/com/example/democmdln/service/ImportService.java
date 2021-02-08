@@ -26,6 +26,14 @@ public class ImportService {
 
     private static final String SQL_INSERT = "INSERT INTO BALANCES (first_name, last_name, address, city, state, zip, phone, balance, createtime, filename) " +
                                                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final int FIRST = 0;
+    private static final int LAST = 1;
+    private static final int ADDR = 2;
+    private static final int CITY = 3;
+    private static final int STATE = 4;
+    private static final int ZIP = 5;
+    private static final int PHONE = 6;
+    private static final int BAL = 7;
 
     public String processImport(LocalDateTime runDateTime) {
         int iCnt = 0;
@@ -36,7 +44,7 @@ public class ImportService {
         PreparedStatement pstmt = null;
         BigDecimal bd = null;
 
-        System.out.println("inputfile: " + inputfile);
+        System.out.printf("inputfile: %s \nrunDateTime: %s \n", inputfile, runDateTime.toString());
         try {
             file = ResourceUtils.getFile(inputfile);
             fis = new FileInputStream(file);
@@ -46,20 +54,22 @@ public class ImportService {
             conn = DriverManager.getConnection(datasourceUrl, datasourceUsername, datasourcePassword);
             pstmt = conn.prepareStatement(SQL_INSERT);
 
+            System.out.println("SQL_INSERT: " + SQL_INSERT);
+
             while ((line = br.readLine()) != null) {
                 iCnt = iCnt + 1;
-                System.out.println(line);
+                //System.out.println(line);
                 if (iCnt > 1) {
                     String[] col = line.split("\\,", -1);
 
-                    pstmt.setString(1, col[0]);
-                    pstmt.setString(2, col[1]);
-                    pstmt.setString(3, col[2]);
-                    pstmt.setString(4, col[3]);
-                    pstmt.setString(5, col[4]);
-                    pstmt.setString(6, col[5]);
-                    pstmt.setString(7, col[6]);
-                    bd = new BigDecimal(col[7].replaceAll("[$,]",""));
+                    pstmt.setString(1, col[FIRST]);
+                    pstmt.setString(2, col[LAST]);
+                    pstmt.setString(3, col[ADDR]);
+                    pstmt.setString(4, col[CITY]);
+                    pstmt.setString(5, col[STATE]);
+                    pstmt.setString(6, col[ZIP]);
+                    pstmt.setString(7, col[PHONE]);
+                    bd = new BigDecimal(col[BAL].replaceAll("[$,]",""));
                     pstmt.setBigDecimal(8, bd);
                     pstmt.setTimestamp(9, Timestamp.valueOf(runDateTime));
                     pstmt.setString(10, inputfile);
@@ -78,8 +88,6 @@ public class ImportService {
             if (pstmt != null) {  try {  pstmt.close();  } catch (Exception e2) { }  }
             if (conn != null) {  try {  conn.close();  } catch (Exception e3) { }  }
         }
-
-
 
         return "Processed: " + iCnt + " Imported to database: " + iProc;
     }
